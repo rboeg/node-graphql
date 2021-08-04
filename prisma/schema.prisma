@@ -1,0 +1,60 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String @db.VarChar(128)
+
+  firstName  String  @map("first_name") @db.VarChar(128)
+  lastName   String  @map("last_name") @db.VarChar(128)
+  isLandlord Boolean @default(false) @map("is_landlord")
+
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime?   @updatedAt @map("updated_at")
+  deleted    DateTime?
+  apartments Apartment[]
+  favorites  Favorite[]
+  @@map("user")
+}
+
+model Apartment {
+  id             Int      @id @default(autoincrement())
+  title          String   @db.VarChar(128)
+  description    String?  @db.VarChar(128)
+  city           String   @db.VarChar(128)
+  user           User     @relation(fields: [userId], references: [id])
+  userId         Int      @map("user_id")
+  nBedrooms      Int      @map("n_bedrooms")
+  nBathrooms     Int      @map("n_bathrooms")
+  areaM2         Decimal  @map("area_m2") @db.Decimal(8, 3)
+  monthlyRentEUR Int      @map("month_rent_eur")
+  latitude       Decimal? @map("latitude") @db.Decimal(12, 8)
+  longitude      Decimal? @map("longitude") @db.Decimal(12, 8)
+  availableFrom  DateTime @default(now()) @map("avail_from")
+
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime?  @updatedAt @map("updated_at")
+  deleted   DateTime?
+  favorites Favorite[]
+  @@map("apartment")
+}
+
+model Favorite {
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int       @map("user_id")
+  apartment   Apartment @relation(fields: [apartmentId], references: [id])
+  apartmentId Int       @map("apartment_id")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deleted   DateTime?
+  @@id([userId, apartmentId])
+  @@map("favorite")
+}

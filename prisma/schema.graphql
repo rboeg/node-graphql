@@ -1,0 +1,73 @@
+
+scalar DateTime
+
+"""
+Root type for all query operations
+"""
+type Query {
+  "Lists all users or a specific one. The username is the email"
+  users(id: Int): [User]!
+  "Performs authentication by providing user name (email) and password"
+  login(email: String!, password: String!): User
+  "Lists all apartments or a specific one"
+  apartments(id: Int, nBathrooms:Int, nBedrooms:Int): [Apartment]!
+  "List all apartments located at a distance less than or equal to the one provided"
+  apartmentsGeoLoc(currLatitude:Float!, currLongitude:Float!, distanceKm:Float!): [Apartment]!
+  "Lists all apartments marked as favorite or a specific one"
+  favorites(userId:Int, apartmentId:Int): [Favorite]!
+}
+
+"""
+Root type for all mutation operations
+"""
+type Mutation {
+  "Creates an user (password must be provided in clear text (it is stored encrypted))"
+  register(email:String!, firstName:String!, lastName:String!, password:String!): User 
+  "Creates an apartment"
+  createApartment(userId:Int!, title:String!, description:String, city:String!, nBedrooms:Int!, nBathrooms:Int!, 
+                areaM2:Float!, monthlyRentEUR:Int!, latitude:Float!, longitude:Float!, availableFrom:DateTime): Apartment 
+  "Marks an apartment as favorite by one user"
+  markAsFavorite(userId:Int!, apartmentId:Int!): Favorite
+}
+
+"""
+Service user (may be landlord or not)
+"""
+type User {
+  id: Int
+  email: String
+  firstName: String
+  lastName: String
+  isLandlord: Boolean
+}
+
+"""
+Apartment for rent
+"""
+type Apartment {
+  id: Int
+  title: String
+  description: String
+  "(TODO: city should be normalized (implementing relations for city and country))"
+  city: String
+  user: User
+  userId: Int
+  nBedrooms: Int
+  nBathrooms: Int
+  areaM2: Float
+  monthlyRentEUR: Int 
+  latitude: Float
+  longitude: Float
+  availableFrom: DateTime
+  distance: Float
+}
+
+"""
+Apartments marked as favorite by users
+"""
+type Favorite {
+  userId: Int
+  user: User
+  apartmentId: Int 
+  apartment: Apartment
+}
