@@ -81,14 +81,14 @@ const start = function (options) {
         },
         async apartmentsGeoLoc(_, { currLatitude, currLongitude, distanceKm }) {
           const queryStr = `SELECT *,  
-            (SQRT(POW(69.1 * (a.latitude -  ${currLatitude}), 2) + POW(69.1 * (${currLongitude} - a.longitude) * COS(a.latitude / 57.3), 2)) * 1.60934) AS distance 
+            (SQRT(POW(69.1 * (a.latitude -  ${currLatitude}::FLOAT), 2) + POW(69.1 * (${currLongitude}::FLOAT - a.longitude) * COS(a.latitude / 57.3), 2)) * 1.60934) AS distance 
             FROM apartment a 
             WHERE 
-            SQRT(POW(69.1 * (a.latitude -  ${currLatitude}), 2) + POW(69.1 * (${currLongitude} - a.longitude) * COS(a.latitude / 57.3), 2))*1.60934 <= ${distanceKm} 
+            SQRT(POW(69.1 * (a.latitude -  ${currLatitude}::FLOAT), 2) + POW(69.1 * (${currLongitude}::FLOAT - a.longitude) * COS(a.latitude / 57.3), 2))*1.60934 <= ${distanceKm}::FLOAT  
             AND 
             a.deleted IS NULL 
             ORDER BY  
-            SQRT(POW(69.1 * (a.latitude -  ${currLatitude}), 2) + POW(69.1 * (${currLongitude} - a.longitude) * COS(a.latitude / 57.3), 2))*1.60934  
+            SQRT(POW(69.1 * (a.latitude -  ${currLatitude}::FLOAT), 2) + POW(69.1 * (${currLongitude}::FLOAT - a.longitude) * COS(a.latitude / 57.3), 2))*1.60934  
             ;`;
           const apartmentsResult = await prisma.$queryRaw(queryStr);
 
@@ -106,19 +106,6 @@ const start = function (options) {
           );
           return apartmentsResultObj;
         },
-        /*
-        async apartmentsGeoLocJS(_, { currLatitude, currLongitude, distanceKm }) {
-
-          const apartmentsResult = await prisma.apartment.findMany({
-            where: { AND: [{distanceKm: distance(currLatitude, currLongitude, latitude, longitude)}, { deleted: null }] },
-            include: {
-              user: true,
-              apartment: true,
-            }
-          });
-          return apartmentsResult;
-        },
-        */
         async favorites(_, { userId, apartmentId }) {
           let where = {};
           if (userId) {
@@ -224,29 +211,5 @@ const replaceKeyInObjectArray = (a, r) =>
       .map((key) => ({ [r[key] || key]: o[key] }))
       .reduce((a, b) => Object.assign({}, a, b))
   );
-
-/*
-function distance(lat1, lon1, lat2, lon2, unit = "K") {
-  if ((lat1 == lat2) && (lon1 == lon2)) {
-      return 0;
-  }
-  else {
-      var radlat1 = Math.PI * lat1/180;
-      var radlat2 = Math.PI * lat2/180;
-      var theta = lon1-lon2;
-      var radtheta = Math.PI * theta/180;
-      var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-      if (dist > 1) {
-          dist = 1;
-      }
-      dist = Math.acos(dist);
-      dist = dist * 180/Math.PI;
-      dist = dist * 60 * 1.1515;
-      if (unit=="K") { dist = dist * 1.609344 }
-      if (unit=="N") { dist = dist * 0.8684 }
-      return dist;
-  }
-}
-*/
 
 module.exports = Object.assign({}, { start });

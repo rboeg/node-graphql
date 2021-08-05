@@ -11,7 +11,8 @@
     - [Configuration](#configuration)
     - [Database](#database)
   - [Usage](#usage)
-    - [Example](#example)
+    - [Example 1](#example-1)
+    - [Example 2](#example-2)
 
 ## General Info 
 This project implements a GraphQL API service using Node.js + Express and a Postgres relational database as persistence.
@@ -89,7 +90,7 @@ npx prisma migrate reset
 
 ## Usage
 
-Remember: The API documentation is available [here](https://documenter.getpostman.com/view/1795836/TzshH51h)
+Remember: The API documentation is available [here](https://documenter.getpostman.com/view/1795836/TzshH51h).
 
 To run the server, use:
 
@@ -132,7 +133,7 @@ client_secret=55555UrkafDSkmiSBkDNdat3jNQ0YW9XmPp55555
 
 Now, you can make successive requests to the API by providing the **access_token** in the header.
 
-### Example
+### Example 1
 Requesting the **createApartment** operation:
 
 **Request header**
@@ -158,5 +159,80 @@ mutation{
 
 **Response**
 ```
-{"data":{"createApartment":{"id":2}}}
+{
+  "data": {
+    "createApartment": {
+      "id": 2
+    }
+  }
+}
+```
+
+### Example 2
+Requesting the **apartmentsGeoLoc** query:
+
+**Request header**
+```
+POST /graphql HTTP/1.1
+HOST: https://node-graphql-rb.herokuapp.com/graphql
+content-type: application/graphql
+authorization: Bearer 55555WQiOiJ4eW9oVEY0TEI5c29fTUlIVGZ0dmltR1pZQldCbzFIa2hQYWxJSGdHNE5zIiw... (the access_token obtained from the Okta authorization server)
+```
+
+**Request body**
+```
+query {
+    apartmentsGeoLoc (currLatitude: 52.52070477, currLongitude: 13.58748722, distanceKm: 8) {
+      id
+      title
+      description
+      city
+      userId
+      nBedrooms
+      nBathrooms
+      areaM2
+      latitude
+      longitude
+      availableFrom
+      distance
+    }
+}
+```
+
+**Response**
+```
+{
+  "data": {
+    "apartmentsGeoLoc": [
+    {
+      "id": 2,
+      "title": "3-room apartment in Hellersdorf",
+      "description": "Bright and quiet apartment with 2 bedrooms.",
+      "city": "Berlin",
+      "userId": 2,
+      "nBedrooms": 2,
+      "nBathrooms": 1,
+      "areaM2": 49,
+      "latitude": 52.54070481,
+      "longitude": 13.59748723,
+      "availableFrom": "2021-08-04T13:06:51.857+00:00",
+      "distance": 2.3246945255435967
+    },
+    {
+      "id": 1,
+      "title": "Comfortable Studio",
+      "description": "Studio in Berlin, Karlshorst",
+      "city": "Berlin",
+      "userId": 1,
+      "nBedrooms": 1,
+      "nBathrooms": 1,
+      "areaM2": 25,
+      "latitude": 52.48470975,
+      "longitude": 13.5244499,
+      "availableFrom": "2021-08-04T13:06:51.818+00:00",
+      "distance": 5.852343395952332
+    }
+    ]
+  }
+}
 ```
