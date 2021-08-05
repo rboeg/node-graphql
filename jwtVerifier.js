@@ -1,11 +1,15 @@
-
+/**
+ * @file Implements an Okta JWT verifier.
+ */
 const OktaJwtVerifier = require('@okta/jwt-verifier')
 
+/** The Okta JWT verifier. */
 const oktaJwtVerifier = new OktaJwtVerifier({
     issuer: process.env.OKTA_ISSUER,
     clientId: process.env.OKTA_CLIENT_ID
 })
 
+/** Authorization function. */
 module.exports = async (request, response, next) => {
 
     const { authorization } = request.headers;

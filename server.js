@@ -1,3 +1,7 @@
+/**
+ * @file Implements the server.
+ */
+
 "use strict";
 
 const express = require("express");
@@ -14,11 +18,11 @@ const saltRounds = 10;
 const start = function (options) {
   return new Promise(function (resolve, reject) {
     process.on("unhandledRejection", (reason, p) => {
-      console.log("Unhandled Rejection at: Promise", p, "reason:", reason);
+      console.log("Unhandled rejection at: Promise", p, "reason:", reason);
     });
 
     if (!options.port) {
-      reject(new Error("no port specificed"));
+      reject(new Error("No port specificed"));
     }
 
     const app = express();
@@ -26,7 +30,7 @@ const start = function (options) {
     app.use(function (error, request, response, next) {
       console.log(error);
       reject(new Error("something went wrong" + error));
-      response.status(500).send("something went wrong");
+      response.status(500).send("Something went wrong");
     });
 
     const prisma = new PrismaClient();
@@ -56,7 +60,7 @@ const start = function (options) {
           }
           return user;
         },
-        async apartments(_, { id, nBathrooms, nBedrooms }) {
+        async apartments(_, { id, nBathrooms, nBedrooms, city }) {
           let where = {};
           if (id) {
             where = { id: id };
@@ -64,6 +68,8 @@ const start = function (options) {
             where = { nBathrooms: nBathrooms };
           } else if (nBedrooms) {
             where = { nBedrooms: nBedrooms };
+          } else if (city) {
+            where = { city: city };
           }
           const apartmentsResult = await prisma.apartment.findMany({
             where: { AND: [where, { deleted: null }] },
@@ -219,6 +225,7 @@ const replaceKeyInObjectArray = (a, r) =>
       .reduce((a, b) => Object.assign({}, a, b))
   );
 
+/*
 function distance(lat1, lon1, lat2, lon2, unit = "K") {
   if ((lat1 == lat2) && (lon1 == lon2)) {
       return 0;
@@ -240,5 +247,6 @@ function distance(lat1, lon1, lat2, lon2, unit = "K") {
       return dist;
   }
 }
+*/
 
 module.exports = Object.assign({}, { start });

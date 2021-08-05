@@ -1,13 +1,13 @@
-'use strict'
+"use strict";
 
-require('dotenv').config();
+require("dotenv").config();
 
-const server = require('./server')
-
+import { start } from "./server";
 const port = process.env.PORT || 3000;
 
-server.start({
+/** Starts the server. */
+start({
     port: port
 }).then(app => {
-    console.log('[node] Application is now running on port ' + port);
+    console.log("[node] Application is now running on port " + port);
 })

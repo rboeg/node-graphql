@@ -10,7 +10,7 @@ type Query {
   "Performs authentication by providing user name (email) and password"
   login(email: String!, password: String!): User
   "Lists all apartments or a specific one"
-  apartments(id: Int, nBathrooms:Int, nBedrooms:Int): [Apartment]!
+  apartments(id: Int, nBathrooms:Int, nBedrooms:Int, city:String): [Apartment]!
   "List all apartments located at a distance less than or equal to the one provided"
   apartmentsGeoLoc(currLatitude:Float!, currLongitude:Float!, distanceKm:Float!): [Apartment]!
   "Lists all apartments marked as favorite or a specific one"
