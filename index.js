@@ -2,7 +2,7 @@
 
 require("dotenv").config();
 
-import { start } from "./server";
+const start = require('./server');
 const port = process.env.PORT || 3000;
 
 /** Starts the server. */
